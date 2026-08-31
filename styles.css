@@ -74,12 +74,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .page-grid {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 470px;
-  gap: 48px;
+  display: block;
   max-width: 1480px;
   margin: 0 auto;
-  padding: 60px 28px 80px;
+  padding: 60px calc(470px + 48px + 28px) 80px 28px;
 }
 .library { min-width: 0; }
 .intro { max-width: 780px; padding-bottom: 38px; }
@@ -135,12 +133,21 @@ code { color: var(--amber); font-family: var(--mono); }
 .empty-state { display: grid; gap: 8px; padding: 44px 24px; border: 1px dashed var(--line); color: var(--muted); }
 .empty-state strong { color: var(--text); }
 
-.viewer-column { min-width: 0; }
-.viewer-card { position: sticky; top: 20px; overflow: hidden; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 18px 50px rgba(0,0,0,.2); }
+.viewer-column {
+  position: fixed;
+  z-index: 4;
+  top: 50%;
+  right: max(28px, calc((100vw - 1480px) / 2 + 28px));
+  width: 470px;
+  height: min(760px, calc(100vh - 40px));
+  min-height: 520px;
+  transform: translateY(-50%);
+}
+.viewer-card { height: 100%; overflow: hidden; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 18px 50px rgba(0,0,0,.2); }
 .viewer-card__header { min-height: 75px; padding: 17px 20px; border-bottom: 1px solid var(--line); }
 .viewer-state { color: var(--mint); font: 10px var(--mono); letter-spacing: .1em; }
-.viewer-frame-wrap { position: relative; aspect-ratio: 4 / 3; background: #0d1114; }
-#viewerFrame { display: block; width: 100%; height: 100%; min-height: 350px; border: 0; background: #0d1114; }
+.viewer-frame-wrap { position: relative; height: calc(100% - 186px); min-height: 0; background: #0d1114; }
+#viewerFrame { display: block; width: 100%; height: 100%; min-height: 0; border: 0; background: #0d1114; }
 .viewer-empty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; background: rgba(13,17,20,.96); color: var(--muted); font-size: 12px; pointer-events: none; }
 .viewer-empty[hidden] { display: none; }
 .viewer-empty strong { color: var(--text); font-size: 13px; }
@@ -155,6 +162,3 @@ code { color: var(--amber); font-family: var(--mono); }
 .sound-button.is-on { border-color: var(--mint); color: var(--mint); }
 .speed-control { display: flex; gap: 4px; padding: 0 7px; color: var(--dim); font-size: 11px; }
 .speed-control select { width: 42px; border: 0; outline: 0; background: transparent; color: var(--text); font: 10px var(--mono); }
-@media (max-width: 1180px) {
-  .page-grid { grid-template-columns: minmax(0, 1fr) 410px; gap: 28px; }
-}

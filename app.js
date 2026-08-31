@@ -175,23 +175,29 @@ function sourceIconUrl(source) {
   }
 }
 
-function ensureEndMarker(text) {
-  const value = text.trim();
-  if (/(^|[\n,])\s*E\s*(,|$)/m.test(value)) return value;
-  return `${value.endsWith(",") ? value : `${value},`}\nE`;
-}
-
 function toMaidata(entry) {
+  if (entry.maidata.includes("&inote_")) return entry.maidata;
+
+  // Simai's fumen parser expects the chart BPM as an inline event. The
+  // notebook stores it separately so that it can be searched and sorted.
   const chart = ensureEndMarker(entry.maidata);
-  if (chart.includes("&inote_")) return chart;
+  const bpmEvent = /^\(\s*[\d.]+\s*\)/.test(chart) ? "" : `(${entry.bpm})`;
   return [
     `&title=${entry.title}`,
     "&artist=Maidata Notebook",
     "&des=snippet",
     "&first=0",
     "&lv_1=1",
-    `&inote_1=${chart}`
+    `&inote_1=${bpmEvent}${chart}`
   ].join("\n");
+}
+
+function ensureEndMarker(text) {
+  // Keep the short chart on one line. This makes the placement of E
+  // unambiguous after it is attached to &inote_1=.
+  const value = text.replace(/\r\n?/g, "\n").split("\n").map((line) => line.trim()).join("").trim();
+  if (/(^|,)E(,|$)/.test(value)) return value;
+  return `${value.endsWith(",") ? value : `${value},`}E`;
 }
 
 function sendViewerMessage(message) {
@@ -279,7 +285,8 @@ document.querySelectorAll("[data-command]").forEach((button) => {
   button.addEventListener("click", () => sendCommand(button.dataset.command, button.dataset.value));
 });
 $("#speedSelect").addEventListener("change", (event) => sendCommand("speed", event.target.value));
-viewerFrame.addEventListener("load", () => {
+window.addEventListener("message", (event) => {
+  if (event.source !== viewerFrame.contentWindow || event.data?.type !== "majdata-viewer-ready") return;
   state.viewerReady = true;
   $("#viewerState").textContent = "READY";
   if (state.pendingViewerMessage) {
