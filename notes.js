@@ -7,7 +7,6 @@ window.MAIDATA_CONFIG = {
 window.MAIDATA_NOTES = [{
     "id":  "note-20260831-145401",
     "title":  "Para Para Sakura",
-    "description":  "",
     "tags":  [
                  "八分",
                  "调动",

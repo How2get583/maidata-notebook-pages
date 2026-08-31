@@ -33,7 +33,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   outline: 2px solid var(--amber);
   outline-offset: 3px;
 }
-.header-meta, .current-label, .list-count, .filter-hint, .filter-label-row small {
+.header-meta, .current-label, .list-count {
   font-family: var(--mono);
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -66,6 +66,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   font: 700 12px/1 var(--mono);
   letter-spacing: -.1em;
 }
+.brand-mark svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; stroke-linejoin: round; }
 .brand strong { display: block; }
 .brand strong { font: 700 13px/1 var(--mono); letter-spacing: .12em; }
 .header-meta { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 10px; }
@@ -94,7 +95,6 @@ code { color: var(--amber); font-family: var(--mono); }
 .tag-filter { margin-top: 24px; }
 .tag-filter[hidden] { display: none; }
 .filter-label-row { color: var(--text); font-size: 12px; }
-.filter-label-row small { margin-left: 8px; color: var(--dim); font-size: 9px; }
 #activeTagMeta { color: var(--mint); font: 10px var(--mono); }
 .tag-picker { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
 .tag-chip { padding: 7px 10px; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: var(--muted); font: 11px var(--mono); transition: border-color 160ms, color 160ms, background 160ms; }
@@ -105,7 +105,6 @@ code { color: var(--amber); font-family: var(--mono); }
 .numeric-filter input, .sort-filter select { min-width: 104px; height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 2px; outline: 0; background: var(--panel); color: var(--text); }
 .numeric-filter input:focus, .sort-filter select:focus { border-color: var(--amber); }
 .range-dash { padding-bottom: 9px; color: var(--dim); }
-.filter-hint { padding-bottom: 9px; color: var(--dim); font-size: 9px; }
 .sort-filter { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; }
 .sort-filter select { min-width: 190px; color: var(--text); }
 
@@ -118,7 +117,6 @@ code { color: var(--amber); font-family: var(--mono); }
 .post-title-row { justify-content: flex-start; gap: 12px; margin-top: 0; }
 .post h3 { margin: 0; color: #e8efed; font-size: 20px; font-weight: 600; letter-spacing: -.035em; }
 .bpm-badge { padding: 4px 7px; border: 1px solid #3b4a4d; color: var(--amber); font: 10px var(--mono); white-space: nowrap; }
-.post-description { max-width: 720px; margin: 11px 0 16px; color: var(--muted); font-size: 13px; line-height: 1.7; }
 .post-code { overflow: auto; margin: 0; padding: 13px 14px; border-left: 2px solid #53666a; background: #101619; color: #c6d4d1; font: 12px/1.7 var(--mono); white-space: pre-wrap; word-break: break-word; }
 .post-footer { gap: 20px; margin-top: 16px; align-items: end; }
 .post-tags { display: flex; flex-wrap: wrap; gap: 8px; color: var(--dim); font: 10px var(--mono); }

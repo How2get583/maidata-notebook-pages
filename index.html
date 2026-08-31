@@ -11,7 +11,14 @@
 <body>
   <header class="site-header">
     <a class="brand" href="./" aria-label="Maidata Notebook 首页">
-      <span class="brand-mark" aria-hidden="true">M/</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M6.5 3.75h10.25A1.75 1.75 0 0 1 18.5 5.5v14.75H8.25A1.75 1.75 0 0 1 6.5 18.5z"></path>
+          <path d="M6.5 3.75v14.75A1.75 1.75 0 0 0 8.25 20.25H18.5"></path>
+          <path d="M9.5 8h5.25M9.5 11h5.25"></path>
+          <path d="m14 14.25 4 2.5-4 2.5z"></path>
+        </svg>
+      </span>
       <strong>MAIDATA NOTEBOOK</strong>
     </a>
     <div class="header-meta">
@@ -36,7 +43,7 @@
 
         <div class="tag-filter" id="tagFilter">
           <div class="filter-label-row">
-            <span>标签 <small>全部满足 / AND</small></span>
+            <span>标签</span>
             <span id="activeTagMeta">未选择</span>
           </div>
           <div class="tag-picker" id="tagPicker"></div>
@@ -52,7 +59,6 @@
             <span>BPM 上限</span>
             <input id="bpmMax" type="number" min="1" max="999" inputmode="numeric" placeholder="不限">
           </label>
-          <span class="filter-hint">闭区间</span>
         </div>
 
         <label class="sort-filter" for="sortSelect">

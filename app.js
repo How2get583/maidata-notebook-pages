@@ -23,7 +23,6 @@ function normalizeEntry(entry) {
   return {
     id: String(entry.id || "entry"),
     title: String(entry.title || "未命名配置"),
-    description: String(entry.description || ""),
     tags: Array.isArray(entry.tags) ? entry.tags.map(String).filter(Boolean) : [],
     bpm: Number(entry.bpm) || 0,
     addedAt: String(entry.addedAt || "1970-01-01"),
@@ -143,12 +142,6 @@ function createPost(entry) {
   footer.append(tagList, actions);
 
   article.append(titleRow);
-  if (entry.description) {
-    const description = document.createElement("p");
-    description.className = "post-description";
-    description.textContent = entry.description;
-    article.append(description);
-  }
   article.append(code, footer);
   return article;
 }
