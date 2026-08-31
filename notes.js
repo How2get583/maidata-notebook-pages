@@ -8,6 +8,7 @@ window.MAIDATA_CONFIG = {
 window.MAIDATA_NOTES = [
   {
     "title":  "Para Para Sakura",
+    "classification":  "非官谱",
     "tags":  [
                  "八分",
                  "调动",
@@ -19,6 +20,7 @@ window.MAIDATA_NOTES = [
   },
   {
     "title":  "ARROW",
+    "classification":  "非官谱",
     "tags":  [
                  "八分",
                  "调动",
@@ -30,6 +32,7 @@ window.MAIDATA_NOTES = [
   },
   {
     "title":  "永イ夜ハ空ヲ歩キ。",
+    "classification":  "非官谱",
     "tags":  [
                  "八分",
                  "调动",

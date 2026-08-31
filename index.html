@@ -41,6 +41,18 @@
           <button class="text-button" id="clearFilters" type="button">清空</button>
         </div>
 
+        <div class="classification-filter" id="classificationFilter">
+          <div class="filter-label-row">
+            <span>分类</span>
+            <span id="activeClassificationMeta">未选择</span>
+          </div>
+          <div class="classification-picker" id="classificationPicker">
+            <button class="classification-chip" type="button" data-classification="" aria-pressed="true">全部</button>
+            <button class="classification-chip" type="button" data-classification="官谱" aria-pressed="false">官谱</button>
+            <button class="classification-chip" type="button" data-classification="非官谱" aria-pressed="false">非官谱</button>
+          </div>
+        </div>
+
         <div class="tag-filter" id="tagFilter">
           <div class="filter-label-row">
             <span>标签</span>

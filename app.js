@@ -6,6 +6,7 @@ const entries = (window.MAIDATA_NOTES || []).map((entry, index) => normalizeEntr
 const viewerUrl = window.MAIDATA_CONFIG?.viewerUrl || "./viewer/";
 
 const state = {
+  classification: "",
   selectedTags: new Set(),
   bpmMin: null,
   bpmMax: null,
@@ -23,6 +24,7 @@ function normalizeEntry(entry, index) {
   return {
     id: `entry-${index + 1}`,
     title: String(entry.title || "未命名配置"),
+    classification: entry.classification === "官谱" ? "官谱" : "非官谱",
     tags: Array.isArray(entry.tags) ? entry.tags.map(String).filter(Boolean) : [],
     bpm: Number(entry.bpm) || 0,
     addedAt: String(entry.addedAt || "1970-01-01"),
@@ -46,10 +48,11 @@ function filteredEntries() {
   const min = state.bpmMin;
   const max = state.bpmMax;
   return entries.filter((entry) => {
+    const classificationMatch = !state.classification || entry.classification === state.classification;
     const tagMatch = [...state.selectedTags].every((tag) => entry.tags.includes(tag));
     const minMatch = min === null || entry.bpm >= min;
     const maxMatch = max === null || entry.bpm <= max;
-    return tagMatch && minMatch && maxMatch;
+    return classificationMatch && tagMatch && minMatch && maxMatch;
   }).sort(sortEntries);
 }
 
@@ -77,6 +80,14 @@ function renderTagPicker() {
     picker.append(button);
   });
   $("#activeTagMeta").textContent = state.selectedTags.size ? `${state.selectedTags.size} 个条件` : "未选择";
+}
+
+function renderClassificationPicker() {
+  document.querySelectorAll("#classificationPicker button[data-classification]").forEach((button) => {
+    const active = button.dataset.classification === state.classification;
+    button.setAttribute("aria-pressed", String(active));
+  });
+  $("#activeClassificationMeta").textContent = state.classification || "未选择";
 }
 
 function renderPosts() {
@@ -118,6 +129,12 @@ function createPost(entry) {
 
   const footer = document.createElement("div");
   footer.className = "post-footer";
+  const postMeta = document.createElement("div");
+  postMeta.className = "post-meta";
+  const classification = document.createElement("span");
+  classification.className = `classification-badge classification-badge--${entry.classification === "官谱" ? "official" : "unofficial"}`;
+  classification.textContent = entry.classification;
+  postMeta.append(classification);
   const tagList = document.createElement("div");
   tagList.className = "post-tags";
   entry.tags.forEach((tag) => {
@@ -139,7 +156,8 @@ function createPost(entry) {
   load.textContent = "载入 →";
   load.addEventListener("click", () => loadEntry(entry));
   actions.append(copy, load);
-  footer.append(tagList, actions);
+  postMeta.append(tagList);
+  footer.append(postMeta, actions);
 
   article.append(titleRow);
   article.append(code, footer);
@@ -215,7 +233,7 @@ function loadEntry(entry) {
   $("#viewerEmpty").hidden = true;
   $("#viewerState").textContent = "LOADING";
   $("#currentTitle").textContent = entry.title;
-  $("#currentMeta").textContent = `${entry.bpm} BPM · ${entry.tags.join(" / ")}`;
+  $("#currentMeta").textContent = `${entry.classification} · ${entry.bpm} BPM · ${entry.tags.join(" / ")}`;
   sendViewerMessage({ type: "majdata-load", maidata: toMaidata(entry) });
   document.querySelectorAll(".post.is-current").forEach((node) => node.classList.remove("is-current"));
   $(`#post-${CSS.escape(entry.id)}`)?.classList.add("is-current");
@@ -267,6 +285,13 @@ $("#tagPicker").addEventListener("click", (event) => {
   renderTagPicker();
   renderPosts();
 });
+$("#classificationPicker").addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-classification]");
+  if (!button) return;
+  state.classification = button.dataset.classification;
+  renderClassificationPicker();
+  renderPosts();
+});
 $("#bpmMin").addEventListener("input", (event) => setBpmFilter(event.target, "bpmMin"));
 $("#bpmMax").addEventListener("input", (event) => setBpmFilter(event.target, "bpmMax"));
 $("#sortSelect").addEventListener("change", (event) => {
@@ -274,11 +299,13 @@ $("#sortSelect").addEventListener("change", (event) => {
   renderPosts();
 });
 $("#clearFilters").addEventListener("click", () => {
+  state.classification = "";
   state.selectedTags.clear();
   state.bpmMin = null;
   state.bpmMax = null;
   $("#bpmMin").value = "";
   $("#bpmMax").value = "";
+  renderClassificationPicker();
   renderTagPicker();
   renderPosts();
 });
@@ -296,5 +323,6 @@ window.addEventListener("message", (event) => {
   }
 });
 
+renderClassificationPicker();
 renderTagPicker();
 renderPosts();

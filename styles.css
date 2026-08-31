@@ -92,6 +92,12 @@ code { color: var(--amber); font-family: var(--mono); }
 .filter-heading h2, .list-heading h2, .viewer-card__header h2 { margin: 0; color: #e7efed; font-size: 21px; font-weight: 600; letter-spacing: -.03em; }
 .text-button { padding: 0; border: 0; background: transparent; color: var(--muted); font: 11px var(--mono); }
 .text-button:hover { color: var(--amber); }
+.classification-filter { margin-top: 24px; }
+#activeClassificationMeta { color: var(--mint); font: 10px var(--mono); }
+.classification-picker { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+.classification-chip { padding: 7px 10px; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: var(--muted); font: 11px var(--mono); transition: border-color 160ms, color 160ms, background 160ms; }
+.classification-chip:hover { border-color: var(--muted); color: var(--text); }
+.classification-chip[aria-pressed="true"] { border-color: var(--amber); background: rgba(233,184,109,.1); color: var(--amber); }
 .tag-filter { margin-top: 24px; }
 .tag-filter[hidden] { display: none; }
 .filter-label-row { color: var(--text); font-size: 12px; }
@@ -119,6 +125,10 @@ code { color: var(--amber); font-family: var(--mono); }
 .bpm-badge { padding: 4px 7px; border: 1px solid #3b4a4d; color: var(--amber); font: 10px var(--mono); white-space: nowrap; }
 .post-code { overflow: auto; margin: 0; padding: 13px 14px; border-left: 2px solid #53666a; background: #101619; color: #c6d4d1; font: 12px/1.7 var(--mono); white-space: pre-wrap; word-break: break-word; }
 .post-footer { gap: 20px; margin-top: 16px; align-items: end; }
+.post-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; min-width: 0; }
+.classification-badge { padding: 4px 7px; border: 1px solid currentColor; font: 10px var(--mono); white-space: nowrap; }
+.classification-badge--official { color: var(--amber); }
+.classification-badge--unofficial { color: var(--mint); }
 .post-tags { display: flex; flex-wrap: wrap; gap: 8px; color: var(--dim); font: 10px var(--mono); }
 .post-tags span { color: #91a5a3; }
 .post-actions { display: flex; align-items: center; gap: 10px; }
