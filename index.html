@@ -12,15 +12,9 @@
   <header class="site-header">
     <a class="brand" href="./" aria-label="Maidata Notebook 首页">
       <span class="brand-mark" aria-hidden="true">M/</span>
-      <span>
-        <strong>MAIDATA NOTEBOOK</strong>
-        <small>field notes for custom charts</small>
-      </span>
+      <strong>MAIDATA NOTEBOOK</strong>
     </a>
     <div class="header-meta">
-      <span class="live-dot" aria-hidden="true"></span>
-      <span>STATIC / REPO MANAGED</span>
-      <span class="header-rule" aria-hidden="true"></span>
       <span id="resultMeta">0 条记录</span>
     </div>
   </header>
@@ -28,22 +22,19 @@
   <main class="page-grid">
     <section class="library" aria-labelledby="pageTitle">
       <div class="intro">
-        <p class="eyebrow">CHART CONFIGURATION INDEX</p>
-        <h1 id="pageTitle">把好配置留下来，<br><em>下次直接载入。</em></h1>
-        <p class="intro-copy">给舞萌自制谱找灵感时，从标签和 BPM 过滤短片段；确认值得复用，再点一次“载入”交给右侧 Viewer。</p>
-        <p class="repo-note"><span aria-hidden="true">↳</span> 内容由 <code>notes.js</code> 管理，提交到 GitHub 后发布。</p>
+        <h1 id="pageTitle">配置笔记</h1>
+        <p class="intro-copy">收集、检索并预览短 maidata 片段。</p>
       </div>
 
       <section class="filter-panel" aria-label="筛选与排序">
         <div class="filter-heading">
           <div>
-            <p class="eyebrow">FILTERS</p>
-            <h2>检索配置</h2>
+            <h2>筛选</h2>
           </div>
-          <button class="text-button" id="clearFilters" type="button">清空筛选</button>
+          <button class="text-button" id="clearFilters" type="button">清空</button>
         </div>
 
-        <div class="tag-filter">
+        <div class="tag-filter" id="tagFilter">
           <div class="filter-label-row">
             <span>标签 <small>全部满足 / AND</small></span>
             <span id="activeTagMeta">未选择</span>
@@ -78,8 +69,7 @@
 
       <div class="list-heading">
         <div>
-          <p class="eyebrow">NOTE ENTRIES</p>
-          <h2>配置条目</h2>
+          <h2>配置</h2>
         </div>
         <span class="list-count" id="listCount">0 / 0</span>
       </div>
@@ -90,7 +80,6 @@
       <div class="viewer-card">
         <div class="viewer-card__header">
           <div>
-            <p class="eyebrow">LIVE VIEWER</p>
             <h2>MajdataView</h2>
           </div>
           <span class="viewer-state" id="viewerState">WAITING</span>
@@ -100,8 +89,7 @@
           <iframe id="viewerFrame" title="MajdataView WebGL Viewer" src="./viewer/" allow="autoplay" loading="eager"></iframe>
           <div class="viewer-empty" id="viewerEmpty">
             <span class="viewer-empty__mark" aria-hidden="true">M/</span>
-            <strong>尚未载入片段</strong>
-            <span>从左侧条目点击“载入”</span>
+            <strong>尚未载入</strong>
           </div>
         </div>
 
@@ -129,15 +117,9 @@
           <button class="icon-button sound-button is-on" id="soundButton" type="button" data-command="judge-sound" data-value="0" aria-pressed="true" aria-label="关闭正解音" title="正解音：开">♪</button>
         </div>
 
-        <p class="viewer-note">自动播放正解音 · 不加载 MP3 / BG · 仅在点击载入时切换谱面</p>
       </div>
     </aside>
   </main>
-
-  <footer class="site-footer">
-    <span>MAIDATA NOTEBOOK / personal index</span>
-    <span>desktop-first · GitHub Pages</span>
-  </footer>
 
   <script src="notes.js"></script>
   <script src="app.js"></script>

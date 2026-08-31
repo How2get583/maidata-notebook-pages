@@ -29,7 +29,12 @@ function normalizeEntry(entry) {
     addedAt: String(entry.addedAt || "1970-01-01"),
     maidata: String(entry.maidata || ""),
     source: entry.source && entry.source.url
-      ? { platform: String(entry.source.platform || "link"), label: String(entry.source.label || "来源"), url: String(entry.source.url) }
+      ? {
+        platform: String(entry.source.platform || "link"),
+        label: String(entry.source.label || "来源"),
+        url: String(entry.source.url),
+        icon: String(entry.source.icon || "")
+      }
       : null
   };
 }
@@ -59,8 +64,11 @@ function sortEntries(a, b) {
 
 function renderTagPicker() {
   const picker = $("#tagPicker");
+  const tagFilter = $("#tagFilter");
+  const tags = allTags();
   picker.replaceChildren();
-  allTags().forEach((tag) => {
+  tagFilter.hidden = tags.length === 0;
+  tags.forEach((tag) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "tag-chip";
@@ -76,33 +84,25 @@ function renderPosts() {
   const list = $("#postList");
   const visible = filteredEntries();
   list.replaceChildren();
-  $("#listCount").textContent = `${visible.length} / ${entries.length}`;
+  $("#listCount").textContent = visible.length === entries.length
+    ? `${entries.length} 条`
+    : `${visible.length} / ${entries.length}`;
   $("#resultMeta").textContent = `${visible.length} 条记录`;
 
   if (visible.length === 0) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
-    empty.innerHTML = "<strong>没有匹配的配置。</strong><span>尝试减少标签，或扩大 BPM 闭区间。</span>";
+    empty.textContent = entries.length === 0 ? "暂无配置" : "没有匹配的配置";
     list.append(empty);
     return;
   }
-  visible.forEach((entry, index) => list.append(createPost(entry, index)));
+  visible.forEach((entry) => list.append(createPost(entry)));
 }
 
-function createPost(entry, index) {
+function createPost(entry) {
   const article = document.createElement("article");
   article.className = "post";
   article.id = `post-${entry.id}`;
-
-  const top = document.createElement("div");
-  top.className = "post-topline";
-  const number = document.createElement("span");
-  number.className = "post-number";
-  number.textContent = String(index + 1).padStart(2, "0");
-  const date = document.createElement("time");
-  date.dateTime = entry.addedAt;
-  date.textContent = entry.addedAt;
-  top.append(number, date);
 
   const titleRow = document.createElement("div");
   titleRow.className = "post-title-row";
@@ -112,10 +112,6 @@ function createPost(entry, index) {
   bpm.className = "bpm-badge";
   bpm.textContent = `${entry.bpm} BPM`;
   titleRow.append(title, bpm);
-
-  const description = document.createElement("p");
-  description.className = "post-description";
-  description.textContent = entry.description;
 
   const code = document.createElement("pre");
   code.className = "post-code";
@@ -146,7 +142,14 @@ function createPost(entry, index) {
   actions.append(copy, load);
   footer.append(tagList, actions);
 
-  article.append(top, titleRow, description, code, footer);
+  article.append(titleRow);
+  if (entry.description) {
+    const description = document.createElement("p");
+    description.className = "post-description";
+    description.textContent = entry.description;
+    article.append(description);
+  }
+  article.append(code, footer);
   return article;
 }
 
@@ -156,13 +159,27 @@ function createSourceLink(source) {
   link.href = source.url;
   link.target = "_blank";
   link.rel = "noreferrer";
-  link.innerHTML = source.platform === "bilibili"
-    ? '<span class="source-icon" aria-hidden="true">B</span>'
-    : '<span class="source-icon" aria-hidden="true">M/</span>';
+  const icon = document.createElement("img");
+  icon.className = "source-icon";
+  icon.src = source.icon || sourceIconUrl(source);
+  icon.alt = "";
+  icon.loading = "lazy";
+  icon.decoding = "async";
+  icon.referrerPolicy = "no-referrer";
+  icon.addEventListener("error", () => { icon.hidden = true; }, { once: true });
+  link.append(icon);
   const label = document.createElement("span");
   label.textContent = source.label;
   link.append(label);
   return link;
+}
+
+function sourceIconUrl(source) {
+  try {
+    return `${new URL(source.url).origin}/favicon.ico`;
+  } catch {
+    return "";
+  }
 }
 
 function ensureEndMarker(text) {
