@@ -182,7 +182,7 @@ function toMaidata(entry) {
   // notebook stores it separately so that it can be searched and sorted.
   const chart = ensureEndMarker(entry.maidata);
   const bpmEvent = /^\(\s*[\d.]+\s*\)/.test(chart) ? "" : `(${entry.bpm})`;
-  const leadIn = bpmEvent ? `${bpmEvent}{1},` : "";
+  const leadIn = bpmEvent ? `${bpmEvent}{2},` : "";
   return [
     `&title=${entry.title}`,
     "&artist=Maidata Notebook",
