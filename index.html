@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101417">
+  <meta name="description" content="用于收集、检索和预览 maimai 自制谱配置片段的个人笔记。">
+  <title>Maidata Notebook / 配置笔记</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Maidata Notebook 首页">
+      <span class="brand-mark" aria-hidden="true">M/</span>
+      <span>
+        <strong>MAIDATA NOTEBOOK</strong>
+        <small>field notes for custom charts</small>
+      </span>
+    </a>
+    <div class="header-meta">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span>STATIC / REPO MANAGED</span>
+      <span class="header-rule" aria-hidden="true"></span>
+      <span id="resultMeta">0 条记录</span>
+    </div>
+  </header>
+
+  <main class="page-grid">
+    <section class="library" aria-labelledby="pageTitle">
+      <div class="intro">
+        <p class="eyebrow">CHART CONFIGURATION INDEX</p>
+        <h1 id="pageTitle">把好配置留下来，<br><em>下次直接载入。</em></h1>
+        <p class="intro-copy">给舞萌自制谱找灵感时，从标签和 BPM 过滤短片段；确认值得复用，再点一次“载入”交给右侧 Viewer。</p>
+        <p class="repo-note"><span aria-hidden="true">↳</span> 内容由 <code>notes.js</code> 管理，提交到 GitHub 后发布。</p>
+      </div>
+
+      <section class="filter-panel" aria-label="筛选与排序">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">FILTERS</p>
+            <h2>检索配置</h2>
+          </div>
+          <button class="text-button" id="clearFilters" type="button">清空筛选</button>
+        </div>
+
+        <div class="tag-filter">
+          <div class="filter-label-row">
+            <span>标签 <small>全部满足 / AND</small></span>
+            <span id="activeTagMeta">未选择</span>
+          </div>
+          <div class="tag-picker" id="tagPicker"></div>
+        </div>
+
+        <div class="numeric-filter">
+          <label>
+            <span>BPM 下限</span>
+            <input id="bpmMin" type="number" min="1" max="999" inputmode="numeric" placeholder="不限">
+          </label>
+          <span class="range-dash" aria-hidden="true">—</span>
+          <label>
+            <span>BPM 上限</span>
+            <input id="bpmMax" type="number" min="1" max="999" inputmode="numeric" placeholder="不限">
+          </label>
+          <span class="filter-hint">闭区间</span>
+        </div>
+
+        <label class="sort-filter" for="sortSelect">
+          <span>排序</span>
+          <select id="sortSelect">
+            <option value="latest">最新添加</option>
+            <option value="earliest">最早添加</option>
+            <option value="bpm-asc">BPM 从低到高</option>
+            <option value="bpm-desc">BPM 从高到低</option>
+            <option value="title">标题排序</option>
+          </select>
+        </label>
+      </section>
+
+      <div class="list-heading">
+        <div>
+          <p class="eyebrow">NOTE ENTRIES</p>
+          <h2>配置条目</h2>
+        </div>
+        <span class="list-count" id="listCount">0 / 0</span>
+      </div>
+      <div class="post-list" id="postList" aria-live="polite"></div>
+    </section>
+
+    <aside class="viewer-column" aria-label="MajdataView 预览窗口">
+      <div class="viewer-card">
+        <div class="viewer-card__header">
+          <div>
+            <p class="eyebrow">LIVE VIEWER</p>
+            <h2>MajdataView</h2>
+          </div>
+          <span class="viewer-state" id="viewerState">WAITING</span>
+        </div>
+
+        <div class="viewer-frame-wrap">
+          <iframe id="viewerFrame" title="MajdataView WebGL Viewer" src="./viewer/" allow="autoplay" loading="eager"></iframe>
+          <div class="viewer-empty" id="viewerEmpty">
+            <span class="viewer-empty__mark" aria-hidden="true">M/</span>
+            <strong>尚未载入片段</strong>
+            <span>从左侧条目点击“载入”</span>
+          </div>
+        </div>
+
+        <div class="viewer-current" id="viewerCurrent">
+          <span class="current-label">CURRENT</span>
+          <strong id="currentTitle">等待选择</strong>
+          <span id="currentMeta">—</span>
+        </div>
+
+        <div class="viewer-controls" aria-label="Viewer 控制">
+          <button class="icon-button" type="button" data-command="toggle-play" aria-label="暂停或继续" title="暂停 / 继续">▶</button>
+          <button class="icon-button" type="button" data-command="replay" aria-label="重播" title="重播">↻</button>
+          <label class="speed-control" title="播放速度">
+            <span aria-hidden="true">×</span>
+            <select id="speedSelect" aria-label="播放速度">
+              <option value="0.5">0.5</option>
+              <option value="0.75">0.75</option>
+              <option value="1" selected>1.0</option>
+              <option value="1.25">1.25</option>
+              <option value="1.5">1.5</option>
+              <option value="2">2.0</option>
+            </select>
+          </label>
+          <button class="icon-button" type="button" data-command="settings" aria-label="打开设置" title="设置">⚙</button>
+          <button class="icon-button sound-button is-on" id="soundButton" type="button" data-command="judge-sound" data-value="0" aria-pressed="true" aria-label="关闭正解音" title="正解音：开">♪</button>
+        </div>
+
+        <p class="viewer-note">自动播放正解音 · 不加载 MP3 / BG · 仅在点击载入时切换谱面</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">
+    <span>MAIDATA NOTEBOOK / personal index</span>
+    <span>desktop-first · GitHub Pages</span>
+  </footer>
+
+  <script src="notes.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

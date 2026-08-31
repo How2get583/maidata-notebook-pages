@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MajdataView WebGL host</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    html, body { margin: 0; min-height: 100%; background: #11161b; color: #d8e1e7; }
+    body { min-height: 100vh; display: grid; place-items: center; }
+    #unity-container { width: 100vw; height: 100vh; display: grid; place-items: center; }
+    #unity-canvas { width: 100%; height: 100%; background: #0d1114; }
+    #missing-build { max-width: 32rem; padding: 2rem; border: 1px solid #33434c; background: #151d22; line-height: 1.7; }
+    #missing-build strong { color: #89e0c0; }
+  </style>
+</head>
+<body>
+  <main id="unity-container">
+    <section id="missing-build">
+      <strong>VIEWER BUILD NOT FOUND</strong>
+      <p>请先运行 Viewer 仓库的 GitHub Actions WebGL 构建，再将产物放到 <code>Build/</code>。</p>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const buildRoot = "Build";
+      const loader = `${buildRoot}/Build.loader.js`;
+      const config = {
+        dataUrl: `${buildRoot}/Build.data`,
+        frameworkUrl: `${buildRoot}/Build.framework.js`,
+        codeUrl: `${buildRoot}/Build.wasm`,
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Maidata Notebook",
+        productName: "MajdataView text preview",
+        productVersion: "1.0"
+      };
+      const loadMaidata = (text) => {
+        if (window.unityInstance) window.unityInstance.SendMessage("GameMain", "LoadMaidataText", String(text || ""));
+        else window.pendingMaidata = String(text || "");
+      };
+      const sendCommand = (command, value) => {
+        if (!window.unityInstance) return;
+        const methods = {
+          "toggle-play": ["GameMain", "TogglePlay", ""],
+          "replay": ["GameMain", "ReplayChart", ""],
+          "speed": ["GameMain", "SetPlaybackSpeed", String(value || "1")],
+          "settings": ["GameMain", "ToggleSettings", ""],
+          "judge-sound": ["SoundEffect", "SetJudgeSoundEnabled", String(value || "1")]
+        };
+        const target = methods[command];
+        if (target) window.unityInstance.SendMessage(target[0], target[1], target[2]);
+      };
+      window.addEventListener("message", (event) => {
+        const data = event.data || {};
+        if (data.type === "majdata-load") loadMaidata(data.maidata);
+        if (data.type === "majdata-command") sendCommand(data.command, data.value);
+      });
+      window.MajdataView = { loadMaidata, sendCommand };
+      fetch(loader, { method: "HEAD" }).then((response) => {
+        if (!response.ok) return;
+        const script = document.createElement("script");
+        script.src = loader;
+        script.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.id = "unity-canvas";
+          document.getElementById("unity-container").replaceChildren(canvas);
+          createUnityInstance(canvas, config).then((instance) => {
+            window.unityInstance = instance;
+            if (window.pendingMaidata !== undefined) {
+              loadMaidata(window.pendingMaidata);
+              delete window.pendingMaidata;
+            }
+          });
+        };
+        document.body.appendChild(script);
+      });
+    })();
+  </script>
+</body>
+</html>

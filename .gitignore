@@ -1,0 +1,6 @@
+# The Unity Viewer source is pushed as its own repository.
+work/
+
+# Local/exported artifacts are not part of the GitHub Pages site.
+outputs/
+.impeccable/review/
