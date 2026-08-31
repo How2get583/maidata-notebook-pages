@@ -2,7 +2,7 @@
  * No framework and no build step. The page is a static index; the Unity
  * Viewer remains an independent iframe and receives only explicit commands.
  */
-const entries = (window.MAIDATA_NOTES || []).map(normalizeEntry);
+const entries = (window.MAIDATA_NOTES || []).map((entry, index) => normalizeEntry(entry, index));
 const viewerUrl = window.MAIDATA_CONFIG?.viewerUrl || "./viewer/";
 
 const state = {
@@ -19,9 +19,9 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const viewerFrame = $("#viewerFrame");
 
-function normalizeEntry(entry) {
+function normalizeEntry(entry, index) {
   return {
-    id: String(entry.id || "entry"),
+    id: `entry-${index + 1}`,
     title: String(entry.title || "未命名配置"),
     tags: Array.isArray(entry.tags) ? entry.tags.map(String).filter(Boolean) : [],
     bpm: Number(entry.bpm) || 0,
