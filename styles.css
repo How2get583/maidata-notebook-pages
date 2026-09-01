@@ -40,6 +40,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   letter-spacing: .08em;
   text-transform: uppercase;
 }
+.notebook-link { color: var(--mint); text-decoration: none; }
+.notebook-link:hover { color: var(--amber); }
 .site-header {
   position: fixed;
   inset: 0 0 auto;
