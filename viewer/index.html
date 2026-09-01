@@ -14,7 +14,7 @@
     #missing-build strong { color: #89e0c0; }
     #loading-message { margin: .8rem 0 1rem; color: #9baeb5; }
     #loading-track { height: 3px; overflow: hidden; background: #26343b; }
-    #loading-bar { display: block; width: 0; height: 100%; background: #89e0c0; transition: width 180ms ease; }
+    #loading-bar { display: block; width: 100%; height: 100%; background: #89e0c0; transform: scaleX(0); transform-origin: left center; transition: transform 180ms ease; }
     #loading-percent { display: block; margin-top: .55rem; color: #71848b; font-size: .78rem; text-align: right; }
     #missing-build.is-error strong { color: #e38279; }
     #missing-build.is-error #loading-track { display: none; }
@@ -56,7 +56,7 @@
       const updateProgress = (value, stage) => {
         const progress = Math.max(0, Math.min(1, Number(value) || 0));
         const percent = Math.round(progress * 100);
-        bar.style.width = `${percent}%`;
+        bar.style.transform = `scaleX(${progress})`;
         percentLabel.textContent = `${percent}%`;
         loadingMessage.textContent = stage || "加载 WebGL 资源…";
         window.parent.postMessage({ type: "majdata-viewer-progress", progress, stage }, "*");

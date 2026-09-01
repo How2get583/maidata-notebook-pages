@@ -29,7 +29,7 @@ let postsRenderTimer = 0;
 function setViewerProgress(value, stage) {
   const progress = Math.max(0, Math.min(1, Number(value) || 0));
   const percent = Math.round(progress * 100);
-  viewerProgressBar.style.width = `${percent}%`;
+  viewerProgressBar.style.transform = `scaleX(${progress})`;
   viewerProgressValue.textContent = `${percent}%`;
   viewerLoadingStage.textContent = stage || "加载 Viewer";
   viewerProgress.setAttribute("aria-valuenow", String(percent));
@@ -65,7 +65,7 @@ function normalizeEntry(entry, index) {
   return {
     id: `entry-${index + 1}`,
     title: String(entry.title || "未命名配置"),
-    classification: entry.classification === "官谱" ? "官谱" : "非官谱",
+    classification: entry.classification === "官谱" ? "官谱" : "自制谱",
     tags: Array.isArray(entry.tags) ? entry.tags.map(String).filter(Boolean) : [],
     bpm: Number(entry.bpm) || 0,
     addedAt: String(entry.addedAt || "1970-01-01"),
@@ -129,7 +129,9 @@ function renderClassificationPicker() {
     const active = button.dataset.classification === state.classification;
     button.setAttribute("aria-pressed", String(active));
   });
-  $("#activeClassificationMeta").textContent = state.classification || "未选择";
+  const activeClassificationMeta = $("#activeClassificationMeta");
+  activeClassificationMeta.textContent = state.classification || "未选择";
+  activeClassificationMeta.dataset.classification = state.classification || "全部";
 }
 
 function renderPosts() {
@@ -191,7 +193,7 @@ function createPost(entry) {
   const postMeta = document.createElement("div");
   postMeta.className = "post-meta";
   const classification = document.createElement("span");
-  classification.className = `classification-badge classification-badge--${entry.classification === "官谱" ? "official" : "unofficial"}`;
+  classification.className = `classification-badge classification-badge--${entry.classification === "官谱" ? "official" : "custom"}`;
   classification.textContent = entry.classification;
   postMeta.append(classification);
   const tagList = document.createElement("div");
