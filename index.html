@@ -104,7 +104,17 @@
         </div>
 
         <div class="viewer-frame-wrap">
-          <iframe id="viewerFrame" title="MajdataView WebGL Viewer" src="./viewer/" allow="autoplay" loading="eager"></iframe>
+          <iframe id="viewerFrame" title="MajdataView WebGL Viewer" allow="autoplay" loading="eager"></iframe>
+          <div class="viewer-loading" id="viewerLoading" role="status" aria-live="polite">
+            <div class="viewer-loading__head">
+              <span id="viewerLoadingStage">准备 Viewer</span>
+              <span id="viewerProgressValue">0%</span>
+            </div>
+            <div class="viewer-progress" role="progressbar" aria-label="Viewer 加载进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span id="viewerProgressBar"></span>
+            </div>
+            <span class="viewer-loading__hint">首次打开需要初始化 WebGL</span>
+          </div>
           <div class="viewer-empty" id="viewerEmpty" hidden>
             <span class="viewer-empty__mark" aria-hidden="true">M/</span>
             <strong>尚未载入</strong>

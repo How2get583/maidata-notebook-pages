@@ -19,6 +19,47 @@ const state = {
 
 const $ = (selector) => document.querySelector(selector);
 const viewerFrame = $("#viewerFrame");
+const viewerLoading = $("#viewerLoading");
+const viewerLoadingStage = $("#viewerLoadingStage");
+const viewerProgressBar = $("#viewerProgressBar");
+const viewerProgressValue = $("#viewerProgressValue");
+const viewerProgress = $(".viewer-progress");
+let postsRenderTimer = 0;
+
+function setViewerProgress(value, stage) {
+  const progress = Math.max(0, Math.min(1, Number(value) || 0));
+  const percent = Math.round(progress * 100);
+  viewerProgressBar.style.width = `${percent}%`;
+  viewerProgressValue.textContent = `${percent}%`;
+  viewerLoadingStage.textContent = stage || "加载 Viewer";
+  viewerProgress.setAttribute("aria-valuenow", String(percent));
+}
+
+function completeViewerLoading() {
+  setViewerProgress(1, "准备完成");
+  window.setTimeout(() => viewerLoading.classList.add("is-complete"), 80);
+}
+
+function failViewerLoading(message) {
+  viewerLoading.classList.remove("is-complete");
+  viewerLoading.classList.add("is-error");
+  viewerLoadingStage.textContent = "Viewer 加载失败";
+  viewerLoading.querySelector(".viewer-loading__hint").textContent = message;
+}
+
+function startViewerLoad() {
+  if (viewerFrame.dataset.started) return;
+  viewerFrame.dataset.started = "true";
+  viewerFrame.src = viewerUrl;
+  $("#viewerState").textContent = "LOADING";
+  setViewerProgress(0.04, "打开 Viewer");
+}
+
+function scheduleViewerLoad() {
+  const afterFirstPaint = () => window.setTimeout(startViewerLoad, 120);
+  if ("requestAnimationFrame" in window) window.requestAnimationFrame(afterFirstPaint);
+  else afterFirstPaint();
+}
 
 function normalizeEntry(entry, index) {
   return {
@@ -70,13 +111,14 @@ function renderTagPicker() {
   const tags = allTags();
   picker.replaceChildren();
   tagFilter.hidden = tags.length === 0;
-  tags.forEach((tag) => {
+  tags.forEach((tag, index) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "tag-chip";
     button.textContent = tag;
     button.dataset.tag = tag;
     button.setAttribute("aria-pressed", String(state.selectedTags.has(tag)));
+    button.style.setProperty("--tag-index", String(Math.min(index, 8)));
     picker.append(button);
   });
   $("#activeTagMeta").textContent = state.selectedTags.size ? `${state.selectedTags.size} 个条件` : "未选择";
@@ -93,20 +135,37 @@ function renderClassificationPicker() {
 function renderPosts() {
   const list = $("#postList");
   const visible = filteredEntries();
-  list.replaceChildren();
-  $("#listCount").textContent = visible.length === entries.length
-    ? `${entries.length} 条`
-    : `${visible.length} / ${entries.length}`;
-  $("#resultMeta").textContent = `${visible.length} 条记录`;
+  const update = () => {
+    list.replaceChildren();
+    $("#listCount").textContent = visible.length === entries.length
+      ? `${entries.length} 条`
+      : `${visible.length} / ${entries.length}`;
+    $("#resultMeta").textContent = `${visible.length} 条记录`;
 
-  if (visible.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty-state";
-    empty.textContent = entries.length === 0 ? "暂无配置" : "没有匹配的配置";
-    list.append(empty);
+    if (visible.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = entries.length === 0 ? "暂无配置" : "没有匹配的配置";
+      list.append(empty);
+      return;
+    }
+    visible.forEach((entry, index) => {
+      const post = createPost(entry);
+      post.style.setProperty("--post-index", String(Math.min(index, 8)));
+      list.append(post);
+    });
+  };
+
+  window.clearTimeout(postsRenderTimer);
+  if (list.children.length === 0) {
+    update();
     return;
   }
-  visible.forEach((entry) => list.append(createPost(entry)));
+  list.classList.add("is-refreshing");
+  postsRenderTimer = window.setTimeout(() => {
+    update();
+    list.classList.remove("is-refreshing");
+  }, 120);
 }
 
 function createPost(entry) {
@@ -314,15 +373,34 @@ document.querySelectorAll("[data-command]").forEach((button) => {
 });
 $("#speedSelect").addEventListener("change", (event) => sendCommand("speed", event.target.value));
 window.addEventListener("message", (event) => {
-  if (event.source !== viewerFrame.contentWindow || event.data?.type !== "majdata-viewer-ready") return;
+  if (event.source !== viewerFrame.contentWindow) return;
+  const data = event.data || {};
+  if (data.type === "majdata-viewer-progress") {
+    setViewerProgress(data.progress, data.stage);
+    return;
+  }
+  if (data.type === "majdata-viewer-error") {
+    $("#viewerState").textContent = "ERROR";
+    failViewerLoading(String(data.message || "无法加载 Viewer"));
+    return;
+  }
+  if (data.type !== "majdata-viewer-ready") return;
   state.viewerReady = true;
   $("#viewerState").textContent = "READY";
+  completeViewerLoading();
   if (state.pendingViewerMessage) {
     viewerFrame.contentWindow.postMessage(state.pendingViewerMessage, "*");
     state.pendingViewerMessage = null;
   }
 });
 
+viewerFrame.addEventListener("load", () => {
+  if (viewerFrame.dataset.started && !viewerLoading.classList.contains("is-error")) {
+    setViewerProgress(0.08, "连接 Viewer");
+  }
+});
+
 renderClassificationPicker();
 renderTagPicker();
 renderPosts();
+scheduleViewerLoad();

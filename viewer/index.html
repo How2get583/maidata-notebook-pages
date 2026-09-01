@@ -10,15 +10,24 @@
     body { min-height: 100vh; display: grid; place-items: center; }
     #unity-container { width: 100vw; height: 100vh; overflow: hidden; display: grid; place-items: center; }
     #unity-canvas { width: 100%; height: 100%; background: #0d1114; }
-    #missing-build { max-width: 32rem; padding: 2rem; border: 1px solid #33434c; background: #151d22; line-height: 1.7; }
+    #missing-build { width: min(32rem, calc(100vw - 3rem)); padding: 2rem; border: 1px solid #33434c; background: #151d22; line-height: 1.7; }
     #missing-build strong { color: #89e0c0; }
+    #loading-message { margin: .8rem 0 1rem; color: #9baeb5; }
+    #loading-track { height: 3px; overflow: hidden; background: #26343b; }
+    #loading-bar { display: block; width: 0; height: 100%; background: #89e0c0; transition: width 180ms ease; }
+    #loading-percent { display: block; margin-top: .55rem; color: #71848b; font-size: .78rem; text-align: right; }
+    #missing-build.is-error strong { color: #e38279; }
+    #missing-build.is-error #loading-track { display: none; }
+    #missing-build.is-error #loading-percent { display: none; }
   </style>
 </head>
 <body>
   <main id="unity-container">
     <section id="missing-build">
-      <strong>VIEWER BUILD NOT FOUND</strong>
-      <p>请先运行 Viewer 仓库的 GitHub Actions WebGL 构建，再将产物放到 <code>Build/</code>。</p>
+      <strong id="loading-title">LOADING VIEWER</strong>
+      <p id="loading-message">准备 WebGL 资源…</p>
+      <div id="loading-track" aria-hidden="true"><span id="loading-bar"></span></div>
+      <span id="loading-percent">0%</span>
     </section>
   </main>
   <script>
@@ -26,8 +35,9 @@
       // The parent notebook owns page scrolling. Do not let the embedded
       // Unity surface turn the mouse wheel into an internal scroll gesture.
       window.addEventListener("wheel", (event) => event.preventDefault(), { passive: false });
-      const buildRoot = "Build";
-      const loader = `${buildRoot}/Build.loader.js`;
+      const params = new URLSearchParams(location.search);
+      const buildRoot = params.get("build") || "Build";
+      const loader = params.get("loader") || `${buildRoot}/Build.loader.js`;
       const config = {
         dataUrl: `${buildRoot}/Build.data`,
         frameworkUrl: `${buildRoot}/Build.framework.js`,
@@ -37,23 +47,44 @@
         productName: "MajdataView text preview",
         productVersion: "1.0"
       };
-      const showError = (message) => {
-        const panel = document.getElementById("missing-build");
+      const panel = document.getElementById("missing-build");
+      const title = document.getElementById("loading-title");
+      const loadingMessage = document.getElementById("loading-message");
+      const bar = document.getElementById("loading-bar");
+      const percentLabel = document.getElementById("loading-percent");
+
+      const updateProgress = (value, stage) => {
+        const progress = Math.max(0, Math.min(1, Number(value) || 0));
+        const percent = Math.round(progress * 100);
+        bar.style.width = `${percent}%`;
+        percentLabel.textContent = `${percent}%`;
+        loadingMessage.textContent = stage || "加载 WebGL 资源…";
+        window.parent.postMessage({ type: "majdata-viewer-progress", progress, stage }, "*");
+      };
+
+      const showError = (errorMessage) => {
+        if (!panel.isConnected) document.getElementById("unity-container").replaceChildren(panel);
+        panel.classList.add("is-error");
         panel.hidden = false;
-        panel.innerHTML = `<strong>VIEWER LOAD FAILED</strong><p>${message}</p>`;
+        title.textContent = "VIEWER LOAD FAILED";
+        loadingMessage.textContent = errorMessage;
+        window.parent.postMessage({ type: "majdata-viewer-error", message: errorMessage }, "*");
       };
       const loadMaidata = (text) => {
         if (window.unityInstance) window.unityInstance.SendMessage("GameMain", "LoadMaidataText", String(text || ""));
         else window.pendingMaidata = String(text || "");
       };
       const sendCommand = (command, value) => {
-        if (!window.unityInstance) return;
+        if (!window.unityInstance) {
+          window.pendingCommands = [...(window.pendingCommands || []), { command, value }];
+          return;
+        }
         const methods = {
           "toggle-play": ["GameMain", "TogglePlay", ""],
           "replay": ["GameMain", "ReplayChart", ""],
-          "speed": ["GameMain", "SetPlaybackSpeed", String(value || "1")],
+          "speed": ["GameMain", "SetPlaybackSpeed", String(value ?? "1")],
           "settings": ["GameMain", "ToggleSettings", ""],
-          "judge-sound": ["SoundEffect", "SetJudgeSoundEnabled", String(value || "1")]
+          "judge-sound": ["SoundEffect", "SetJudgeSoundEnabled", String(value ?? "1")]
         };
         const target = methods[command];
         if (target) window.unityInstance.SendMessage(target[0], target[1], target[2]);
@@ -65,32 +96,40 @@
       });
       window.MajdataView = { loadMaidata, sendCommand };
 
-      fetch(loader, { method: "HEAD" }).then((response) => {
-        if (!response.ok) throw new Error(`找不到 ${loader}`);
-        const script = document.createElement("script");
-        script.src = loader;
-        script.onerror = () => showError(`无法加载 ${loader}。`);
-        script.onload = () => {
-          const canvas = document.createElement("canvas");
-          canvas.id = "unity-canvas";
-          document.getElementById("unity-container").replaceChildren(canvas);
-          createUnityInstance(canvas, config).then((instance) => {
-            window.unityInstance = instance;
-            window.parent.postMessage({ type: "majdata-viewer-ready" }, "*");
-            if (window.pendingMaidata !== undefined) {
-              loadMaidata(window.pendingMaidata);
-              delete window.pendingMaidata;
-            }
-          }).catch((error) => {
-            console.error(error);
-            showError("WebGL Viewer 初始化失败，请检查 Build 文件是否来自同一次构建。");
-          });
-        };
-        document.body.appendChild(script);
-      }).catch((error) => {
-        console.error(error);
-        showError("WebGL Build 文件未能加载。请用 HTTP 服务打开网页，而不是直接双击 index.html。");
-      });
+      updateProgress(0.03, "下载 Viewer 程序…");
+      const script = document.createElement("script");
+      script.src = loader;
+      script.async = true;
+      script.onerror = () => showError(`无法加载 ${loader}。`);
+      script.onload = () => {
+        updateProgress(0.12, "初始化 WebGL…");
+        const canvas = document.createElement("canvas");
+        canvas.id = "unity-canvas";
+        document.getElementById("unity-container").replaceChildren(canvas);
+        createUnityInstance(canvas, config, (progress) => {
+          const stage = progress < 0.2
+            ? "读取 Viewer 资源…"
+            : progress < 0.85
+              ? "加载 WebGL 资源…"
+              : "初始化渲染器…";
+          updateProgress(0.12 + progress * 0.86, stage);
+        }).then((instance) => {
+          window.unityInstance = instance;
+          updateProgress(1, "准备完成");
+          panel.hidden = true;
+          window.parent.postMessage({ type: "majdata-viewer-ready" }, "*");
+          if (window.pendingMaidata !== undefined) {
+            loadMaidata(window.pendingMaidata);
+            delete window.pendingMaidata;
+          }
+          (window.pendingCommands || []).forEach(({ command, value }) => sendCommand(command, value));
+          delete window.pendingCommands;
+        }).catch((error) => {
+          console.error(error);
+          showError("WebGL Viewer 初始化失败，请检查 Build 文件是否来自同一次构建。");
+        });
+      };
+      document.body.appendChild(script);
     })();
   </script>
 </body>
