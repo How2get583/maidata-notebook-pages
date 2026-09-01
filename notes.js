@@ -56,5 +56,15 @@ window.MAIDATA_NOTES = [
       "label": "bilibili",
       "url": "https://www.bilibili.com/video/BV1oHge6HEXp"
     }
+  },
+  {
+    "title": "セガサターン起動音[H.][Remix]",
+    "classification": "官谱",
+    "tags": [
+      "16分"
+    ],
+    "bpm": 148,
+    "addedAt": "2026-09-01",
+    "maidata": "{16}1/8,,7,, 6,,5,, 4,,6,5, ,3,,3,\n{16}4,,2,, 3,,4,, 5>2[8:1],,5,, 7b,,,,"
   }
 ];
