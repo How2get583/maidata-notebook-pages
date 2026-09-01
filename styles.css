@@ -103,6 +103,7 @@ code { color: var(--amber); font-family: var(--mono); }
 .classification-chip:active, .tag-chip:active { transform: translateY(1px); }
 .classification-chip:hover { border-color: var(--muted); color: var(--text); }
 .classification-chip[aria-pressed="true"] { border-color: var(--amber); background: rgba(239,184,111,.1); color: var(--amber); }
+.classification-chip[data-classification=""][aria-pressed="true"] { border-color: var(--mint); background: rgba(139,216,182,.1); color: var(--mint); }
 .classification-chip[data-classification="自制谱"][aria-pressed="true"] { border-color: var(--blue); background: rgba(120,183,255,.1); color: var(--blue); }
 .tag-filter { margin-top: 24px; }
 .tag-filter[hidden] { display: none; }
