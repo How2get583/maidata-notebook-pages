@@ -52,9 +52,9 @@ window.MAIDATA_NOTES = [
     "addedAt": "2026-09-01",
     "maidata": "{8}1x-4[8:1]/5x-8[8:1],,,,A1h[4:1]/E1h[4:1]/5x-2[16:1],,{64},B7,A6,,,,,,,,,,,,,,\n{8}1x-4[8:1]/5x-8[8:1],,,,A1h[4:1]/E1h[4:1]/5x-2[16:1],,{64},B7,A6,,,,,,,,,,,,,,\n{8}1xbv4[8:1]/5xbv8[8:1],,,,A1h[4:1]/B1h[4:1]/5xv2[16:1],,{64},C,B6,A6,,,,,,,,,,,,,\n{8}1xv4[8:1]/5xv8[8:1],,,,A1h[4:1]/B1h[4:1]/5xv2[16:1],,{64},C,B6,A6,,,,,,,,,,,,,",
     "source": {
-      "platform": "bilibili",
-      "label": "bilibili",
-      "url": "https://www.bilibili.com/video/BV1cp5h6fEZV/?spm_id_from=333.337.search-card.all.click&vd_source=6ba981815c1cc14b5dae8f54c96e43e3"
+      "platform": "majnet",
+      "label": "majnet",
+      "url": "https://majdata.net/space?id=H2g"
     }
   }
 ];
