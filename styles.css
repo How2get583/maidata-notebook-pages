@@ -130,6 +130,8 @@ code { color: var(--amber); font-family: var(--mono); }
 .post { padding: 22px 24px 20px; border: 1px solid var(--line-soft); background: rgba(21,28,32,.78); transition: border-color 160ms, background 160ms, transform 180ms var(--ease-out), box-shadow 180ms ease; animation: rise-in 460ms calc(var(--post-index, 0) * 42ms) var(--ease-out) both; }
 .post:hover { border-color: #405158; background: rgba(25,34,38,.92); transform: translateY(-2px); }
 .post.is-current { border-color: var(--mint); box-shadow: inset 3px 0 0 var(--mint); }
+.post--official.is-current { border-color: var(--amber); box-shadow: inset 3px 0 0 var(--amber); }
+.post--custom.is-current { border-color: var(--blue); box-shadow: inset 3px 0 0 var(--blue); }
 .post-title-row { justify-content: flex-start; gap: 16px; margin: 0 0 16px; align-items: flex-start; }
 .post h3 { min-width: 0; flex: 1; margin: 0; color: #e8efed; font-size: 20px; font-weight: 600; letter-spacing: -.035em; line-height: 1.3; }
 .bpm-badge { flex-shrink: 0; padding: 6px 10px; border: 1px solid #3b4a4d; color: var(--amber); font: 10px var(--mono); white-space: nowrap; }

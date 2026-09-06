@@ -63,7 +63,9 @@ function scheduleViewerLoad() {
 
 function normalizeEntry(entry, index) {
   return {
-    id: `entry-${index + 1}`,
+    // IDs are runtime-only and intentionally independent of the title. This
+    // keeps same-name snippets as separate records without changing notes.js.
+    id: `entry-${String(index + 1).padStart(4, "0")}`,
     title: String(entry.title || "未命名配置"),
     classification: entry.classification === "官谱" ? "官谱" : "自制谱",
     tags: Array.isArray(entry.tags) ? entry.tags.map(String).filter(Boolean) : [],
@@ -98,11 +100,11 @@ function filteredEntries() {
 }
 
 function sortEntries(a, b) {
-  if (state.sort === "earliest") return a.addedAt.localeCompare(b.addedAt) || a.title.localeCompare(b.title, "zh-CN");
-  if (state.sort === "bpm-asc") return a.bpm - b.bpm || b.addedAt.localeCompare(a.addedAt);
-  if (state.sort === "bpm-desc") return b.bpm - a.bpm || b.addedAt.localeCompare(a.addedAt);
-  if (state.sort === "title") return a.title.localeCompare(b.title, "zh-CN");
-  return b.addedAt.localeCompare(a.addedAt) || a.title.localeCompare(b.title, "zh-CN");
+  if (state.sort === "earliest") return a.addedAt.localeCompare(b.addedAt) || a.title.localeCompare(b.title, "zh-CN") || a.id.localeCompare(b.id);
+  if (state.sort === "bpm-asc") return a.bpm - b.bpm || b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id);
+  if (state.sort === "bpm-desc") return b.bpm - a.bpm || b.addedAt.localeCompare(a.addedAt) || a.id.localeCompare(b.id);
+  if (state.sort === "title") return a.title.localeCompare(b.title, "zh-CN") || a.id.localeCompare(b.id);
+  return b.addedAt.localeCompare(a.addedAt) || a.title.localeCompare(b.title, "zh-CN") || a.id.localeCompare(b.id);
 }
 
 function renderTagPicker() {
@@ -172,8 +174,10 @@ function renderPosts() {
 
 function createPost(entry) {
   const article = document.createElement("article");
-  article.className = "post";
+  const classificationKind = entry.classification === "官谱" ? "official" : "custom";
+  article.className = `post post--${classificationKind}`;
   article.id = `post-${entry.id}`;
+  article.dataset.entryId = entry.id;
 
   const titleRow = document.createElement("div");
   titleRow.className = "post-title-row";
