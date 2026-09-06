@@ -81,7 +81,7 @@ window.MAIDATA_NOTES = [
   },
   {
     "title": "4nim0sity|99.999999999%|",
-    "classification": "官谱",
+    "classification": "自制谱",
     "tags": [
       "24分",
       "扫键"
