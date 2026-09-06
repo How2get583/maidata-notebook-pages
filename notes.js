@@ -94,5 +94,21 @@ window.MAIDATA_NOTES = [
       "label": "bilibili",
       "url": "https://www.bilibili.com/video/BV1FLNy6zEJ5"
     }
+  },
+  {
+    "title": "4nim0sity|99.999999999%|",
+    "classification": "官谱",
+    "tags": [
+      "24分",
+      "扫键"
+    ],
+    "bpm": 144,
+    "addedAt": "2026-09-06",
+    "maidata": "{16}6b,,,, 5h[4:1],,,, 4,,,, 3h[4:1],,,,\n{16}2-4[8:1],,,, {24}1,8,7,6,,, {16},,7/3,, 4h[4:1],,5,,\n{16}6h[4:1],,7-5[8:1],, {24}8,1,2,3,,, {16},,6b/2b,, 5h[4:1],,4,,\n{16}3h[4:1],,2-4[8:1],, {24}1,8,7,6,,, {16},,7/3,, 4h[4:1],,5,,\n\n{16}6h[4:1],,8,, {24}8,,,7<4[8:1],8,7, {16}8,,",
+    "source": {
+      "platform": "bilibili",
+      "label": "bilibili",
+      "url": "https://www.bilibili.com/video/BV1FLNy6zEJ5"
+    }
   }
 ];
