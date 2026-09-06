@@ -129,7 +129,7 @@ code { color: var(--amber); font-family: var(--mono); }
 .post-list.is-refreshing { opacity: .42; transform: translateY(4px); }
 .post { padding: 22px 24px 20px; border: 1px solid var(--line-soft); background: rgba(21,28,32,.78); transition: border-color 160ms, background 160ms, transform 180ms var(--ease-out), box-shadow 180ms ease; animation: rise-in 460ms calc(var(--post-index, 0) * 42ms) var(--ease-out) both; }
 .post:hover { border-color: #405158; background: rgba(25,34,38,.92); transform: translateY(-2px); }
-.post.is-current { border-color: var(--mint); box-shadow: inset 3px 0 0 var(--mint); }
+.post.is-current { border-color: var(--line); box-shadow: inset 3px 0 0 var(--line); }
 .post--official.is-current { border-color: var(--amber); box-shadow: inset 3px 0 0 var(--amber); }
 .post--custom.is-current { border-color: var(--blue); box-shadow: inset 3px 0 0 var(--blue); }
 .post-title-row { justify-content: flex-start; gap: 16px; margin: 0 0 16px; align-items: flex-start; }
